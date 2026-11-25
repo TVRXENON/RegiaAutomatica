@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Storico{% endblock %}
+{% block main %}
+<h1>Storico</h1>
+<p class="lead">Le ultime tre giornate andate in onda, con gli orari reali di inizio e fine.</p>
+<div class="tabs" role="tablist">
+  {% for d in days %}
+  <button role="tab" aria-selected="{{ 'true' if loop.first else 'false' }}" aria-controls="tab-{{ d.day }}" data-tab="tab-{{ d.day }}">{{ d.label|capitalize }}</button>
+  {% endfor %}
+</div>
+{% for d in days %}
+<section class="panel" id="tab-{{ d.day }}" role="tabpanel" {% if not loop.first %}hidden{% endif %}>
+  <div class="row" style="margin-bottom:8px">
+    <h2 style="margin:0">{{ d.label|capitalize }}</h2>
+    <span class="spacer"></span>
+    <span class="badge">{{ d.programmi }} video trasmessi</span>
+    {% if d.problemi %}<span class="badge bad">{{ d.problemi }} con problemi</span>{% endif %}
+  </div>
+  {% if d.rows %}
+  <div class="tbl-wrap">
+  <table class="log">
+    <thead><tr><th>Inizio</th><th>Fine</th><th>Titolo</th><th>Durata</th><th>Stato</th></tr></thead>
+    <tbody>
+    {% for r in d.rows %}
+      <tr class="{{ 'filler' if r.kind != 'programma' else '' }}">
+        <td class="t num">{{ r.air_start|ora }}</td>
+        <td class="num muted">{{ r.air_end|ora }}</td>
+        <td class="title">{{ r.title }}{% if r.loops and r.loops > 1 %} <span class="muted small">({{ r.loops }} passaggi)</span>{% endif %}
+          {% if r.note %}<div class="small {{ 'muted' if r.status=='ok' else '' }}" style="{{ '' if r.status=='ok' else 'color:var(--bad)' }}">{{ r.note }}</div>{% endif %}</td>
+        <td class="num">{{ (r.air_end - r.air_start)|durata }}</td>
+        <td>
+          {% if r.status == 'ok' %}<span class="badge ok">{{ 'Riempitivo' if r.kind == 'riempitivo' else ('Schermo nero' if r.kind == 'nero' else 'Trasmesso') }}</span>
+          {% elif r.status == 'interrotto' %}<span class="badge warn">Interrotto</span>
+          {% elif r.status == 'saltato' %}<span class="badge bad">Saltato</span>
+          {% else %}<span class="badge bad">Errore</span>{% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  {% else %}
+  <div class="empty"><b>Nessuna trasmissione registrata</b>In questa giornata il programma non ha mandato in onda niente.</div>
+  {% endif %}
+</section>
+{% endfor %}
+{% endblock %}

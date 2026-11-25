@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}In onda{% endblock %}
+{% block main %}
+<section class="hero" aria-labelledby="now-title">
+  <div class="hero-top">
+    <div style="min-width:0;flex:1">
+      <span class="live-lamp" id="lamp" data-on="0"><i></i><span id="lamp-text">Collegamento in corso</span></span>
+      <p class="now-title" id="now-title">—</p>
+      <div class="now-kind" id="now-kind"></div>
+    </div>
+    <div class="hero-clock num" id="big-clock">--:--:--<small id="big-date"></small></div>
+  </div>
+  <div class="now-bar" id="now-bar" hidden>
+    <div class="bar" role="progressbar" aria-label="Avanzamento del video" aria-valuemin="0" aria-valuemax="100"><i id="bar-fill"></i></div>
+    <div class="bar-times num">
+      <span>Inizio <b id="t-start">--</b></span>
+      <span>Mancano <b id="t-left">--</b></span>
+      <span>Fine <b id="t-end">--</b></span>
+    </div>
+  </div>
+  <div class="rundown">
+    <div class="rundown-head"><h2>Prossime 3 ore</h2><span class="small muted" id="strip-range"></span></div>
+    <div class="strip" id="strip" aria-hidden="true"></div>
+  </div>
+</section>
+
+<div class="cols">
+  <section class="panel">
+    <h2>A seguire</h2>
+    <ul class="next-list" id="next-list"><li><span class="muted">Caricamento…</span></li></ul>
+  </section>
+  <section class="panel">
+    <h2>Trasmissione</h2>
+    <div class="state-msg" id="state-msg">Lettura dello stato…</div>
+    <div class="controls">
+      <button class="btn onair" id="btn-start" hidden><svg><use href="#i-play"/></svg>Avvia trasmissione</button>
+      <button class="btn danger" id="btn-stop" hidden><svg><use href="#i-stop"/></svg>Ferma trasmissione</button>
+      <button class="btn" id="btn-restart"><svg><use href="#i-loop"/></svg>Riapri collegamento</button>
+    </div>
+    <ul class="warn-list" id="warnings"></ul>
+  </section>
+</div>
+{% endblock %}

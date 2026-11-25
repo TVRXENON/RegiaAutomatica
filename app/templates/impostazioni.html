@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}Impostazioni{% endblock %}
+{% block main %}
+<h1>Impostazioni</h1>
+<p class="lead">Le modifiche valgono subito. Cambiare indirizzo o chiave di trasmissione riapre il collegamento per qualche secondo.</p>
+<div class="settings" style="margin-top:24px">
+  <nav class="toc" aria-label="Sezioni delle impostazioni">
+    <a href="#trasmissione">Trasmissione</a>
+    <a href="#riempitivo">Video di riempimento</a>
+    <a href="#formato">Formato dei video</a>
+    <a href="#copie">Copie di sicurezza</a>
+  </nav>
+  <div class="stack">
+    <section class="panel section" id="trasmissione">
+      <h2>Trasmissione</h2>
+      <form method="post">
+        <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="section" value="trasmissione">
+        <label class="field"><span>Nome dell'emittente</span><input type="text" name="station_name" value="{{ s.station_name }}"></label>
+        <label class="field"><span>Indirizzo del server RTMP</span>
+          <input type="text" name="rtmp_url" value="{{ s.rtmp_url }}" placeholder="rtmp://server.example.it/live" spellcheck="false" autocapitalize="none">
+          <small>Senza la chiave: la chiave va nel campo sotto.</small></label>
+        <label class="field"><span>Chiave dello stream</span>
+          <div class="pw"><input type="password" name="rtmp_key" value="{{ s.rtmp_key }}" autocomplete="off" spellcheck="false">
+          <button type="button" class="icon-btn eye" data-eye aria-label="Mostra la chiave" title="Mostra la chiave"><svg><use href="#i-eye"/></svg></button></div></label>
+        <label class="field"><span>Ora del riallineamento giornaliero</span>
+          <select name="realign_hour" style="max-width:160px">{% for h in range(24) %}<option value="{{ h }}" {% if (s.realign_hour or 3)|int == h %}selected{% endif %}>{{ '%02d'|format(h) }}:00</option>{% endfor %}</select>
+          <small>Una volta al giorno, alla fine del primo video dopo quest'ora, il collegamento RTMP viene riaperto per azzerare i tempi del flusso. Il passaggio dura un paio di secondi, tra un video e l'altro: meglio un orario con pochi spettatori.</small></label>
+        <button class="btn primary" type="submit">Salva</button>
+      </form>
+    </section>
+
+    <section class="panel section" id="riempitivo">
+      <h2>Video di riempimento</h2>
+      <p class="small muted" style="margin:0">Va in onda in loop quando non c'è niente in programma e dopo l'ultimo video della giornata, fino a mezzanotte.</p>
+      <form method="post">
+        <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="section" value="riempitivo">
+        <label class="field"><span>Indirizzo del video</span>
+          <input type="text" name="filler_url" value="{{ s.filler_url }}" placeholder="https://tvrxenonondemand.b-cdn.net/…/loop.mp4" spellcheck="false" autocapitalize="none"></label>
+        {% if filler %}
+        <div class="media-card">
+          {% if filler.ok %}<span class="badge ok">Conforme</span>{% else %}<span class="badge bad">Non conforme</span>{% endif %}
+          <span>{{ filler.title }}</span><span class="muted num">{{ filler.duration|durata }}</span>
+          {% if filler.info.kbps %}<span class="muted num">{{ filler.info.kbps }} kbps</span>{% endif %}
+          {% for i in filler.issues %}<span style="color:var(--bad);width:100%">{{ i }}</span>{% endfor %}
+        </div>
+        {% endif %}
+        <button class="btn primary" type="submit">Salva e verifica</button>
+      </form>
+    </section>
+
+    <section class="panel section" id="formato">
+      <h2>Formato dei video</h2>
+      <p class="small muted" style="margin:0">I video vanno in onda senza ricodifica, quindi devono avere tutti lo stesso formato. Ogni video viene controllato quando lo aggiungi; quelli diversi vengono segnalati e saltati.</p>
+      <form method="post">
+        <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="section" value="formato">
+        <div class="grid5">
+          <label class="field"><span>Bitrate massimo</span><input type="number" name="max_kbps" value="{{ s.max_kbps }}" min="100" step="1"><small>kbps</small></label>
+          <label class="field"><span>Larghezza</span><input type="number" name="width" value="{{ s.width }}" min="1"><small>pixel</small></label>
+          <label class="field"><span>Altezza</span><input type="number" name="height" value="{{ s.height }}" min="1"><small>pixel</small></label>
+          <label class="field"><span>Fotogrammi</span><input type="number" name="fps" value="{{ s.fps }}" min="1"><small>al secondo</small></label>
+          <label class="field"><span>Audio</span><input type="number" name="audio_rate" value="{{ s.audio_rate }}" min="8000" step="100"><small>Hz, stereo AAC</small></label>
+        </div>
+        <button class="btn primary" type="submit">Salva e ricontrolla i video</button>
+      </form>
+    </section>
+
+    <section class="panel section" id="copie">
+      <h2>Copie di sicurezza</h2>
+      <p class="small muted" style="margin:0">Palinsesti, impostazioni e utenti vengono salvati sul vostro Bunny Storage pochi minuti dopo ogni modifica e comunque una volta al giorno.
+        {% if s.last_backup %}Ultima copia: {{ s.last_backup|dataora }}.{% endif %}</p>
+      {% if s.last_backup_error %}<p class="err small">Ultimo tentativo non riuscito: {{ s.last_backup_error }}</p>{% endif %}
+      <form method="post">
+        <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="section" value="storage">
+        <div class="grid2">
+          <label class="field"><span>Nome della Storage Zone</span><input type="text" name="storage_zone" value="{{ s.storage_zone }}" spellcheck="false" autocapitalize="none"></label>
+          <label class="field"><span>Regione dello Storage</span>
+            <select name="storage_host">{% for host, name in regions %}<option value="{{ host }}" {% if s.storage_host == host %}selected{% endif %}>{{ name }}</option>{% endfor %}</select></label>
+          <label class="field"><span>Password della Storage Zone</span>
+            <div class="pw"><input type="password" name="storage_password" value="" placeholder="{{ 'Salvata: lascia vuoto per non cambiarla' if s.storage_password else '' }}" autocomplete="off">
+            <button type="button" class="icon-btn eye" data-eye aria-label="Mostra la password" title="Mostra la password"><svg><use href="#i-eye"/></svg></button></div>
+            <small>In Bunny: Storage, la vostra zona, FTP &amp; API Access, Password.</small></label>
+          <label class="field"><span>Cartella</span><input type="text" name="backup_folder" value="{{ s.backup_folder }}" spellcheck="false"></label>
+        </div>
+        <button class="btn primary" type="submit">Salva e prova il collegamento</button>
+      </form>
+      <div class="row" style="margin-top:20px">
+        {% if storage_ok %}<button class="btn" id="bk-now">Salva una copia adesso</button>
+        <button class="btn" id="bk-list">Mostra le copie salvate</button>{% endif %}
+        <a class="btn" href="{{ url_for('copie_scarica') }}">Scarica una copia sul computer</a>
+      </div>
+      <ul class="backups" id="bk-files"></ul>
+      <form method="post" action="{{ url_for('copie_carica') }}" enctype="multipart/form-data" class="row" style="margin-top:16px" id="bk-upload" data-confirm="Ripristinare questa copia? Palinsesti, impostazioni e utenti attuali verranno sostituiti.">
+        <input type="hidden" name="csrf" value="{{ csrf }}">
+        <label class="field" style="flex:1;min-width:220px"><span>Ripristina da un file sul computer</span><input type="file" name="file" accept=".json,application/json" required></label>
+        <button class="btn danger" type="submit" style="align-self:flex-end">Ripristina</button>
+      </form>
+    </section>
+  </div>
+</div>
+{% endblock %}

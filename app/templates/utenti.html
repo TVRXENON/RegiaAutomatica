@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Utenti{% endblock %}
+{% block main %}
+<h1>Utenti</h1>
+<p class="lead">Tutti gli utenti possono modificare palinsesti e impostazioni. Ognuno entra con le proprie credenziali.</p>
+<div class="cols" style="grid-template-columns:1.3fr 1fr">
+  <section class="panel">
+    <ul class="users">
+      {% for u in users %}
+      <li>
+        <div><b>{{ u.name }}</b> <span class="muted">{{ u.username }}</span>{% if u.id == user.id %} <span class="badge xenon">sei tu</span>{% endif %}</div>
+        {% if u.id != user.id %}
+        <form method="post" data-confirm="Eliminare l'utente {{ u.name }}? Non potrà più entrare.">
+          <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="action" value="elimina"><input type="hidden" name="uid" value="{{ u.id }}">
+          <button class="icon-btn danger" type="submit" aria-label="Elimina {{ u.name }}" title="Elimina"><svg><use href="#i-trash"/></svg></button>
+        </form>{% else %}<span></span>{% endif %}
+        <details>
+          <summary>Cambia password</summary>
+          <form method="post" class="pwform">
+            <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="action" value="password"><input type="hidden" name="uid" value="{{ u.id }}">
+            <div class="pw"><input type="password" name="password" minlength="8" required autocomplete="new-password" placeholder="Nuova password, almeno 8 caratteri" aria-label="Nuova password">
+            <button type="button" class="icon-btn eye" data-eye aria-label="Mostra la password" title="Mostra la password"><svg><use href="#i-eye"/></svg></button></div>
+            <button class="btn" type="submit">Cambia</button>
+          </form>
+        </details>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+  <section class="panel">
+    <h2>Nuovo utente</h2>
+    <form method="post" class="stack" style="margin-top:12px">
+      <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="action" value="nuovo">
+      <label class="field"><span>Nome e cognome</span><input type="text" name="name" required></label>
+      <label class="field"><span>Nome utente</span><input type="text" name="username" required minlength="3" autocapitalize="none" spellcheck="false" autocomplete="off"></label>
+      <label class="field"><span>Password</span>
+        <div class="pw"><input type="password" name="password" minlength="8" required autocomplete="new-password">
+        <button type="button" class="icon-btn eye" data-eye aria-label="Mostra la password" title="Mostra la password"><svg><use href="#i-eye"/></svg></button></div>
+        <small>Almeno 8 caratteri.</small></label>
+      <button class="btn primary" type="submit">Crea utente</button>
+    </form>
+  </section>
+</div>
+{% endblock %}

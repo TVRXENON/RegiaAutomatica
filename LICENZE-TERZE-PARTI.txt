@@ -1,0 +1,10 @@
+Componenti di terze parti inclusi nel programma
+
+Archivo (carattere tipografico, app/static/archivo*.woff2)
+Omnibus-Type, distribuito con SIL Open Font License 1.1 - https://openfontlicense.org
+
+SortableJS 1.15.2 (app/static/sortable.min.js)
+Licenza MIT - https://github.com/SortableJS/Sortable
+
+Usati nel container: Python, Flask, Gunicorn, Requests (licenze BSD, MIT e Apache 2.0)
+e FFmpeg dei pacchetti Debian (LGPL/GPL).

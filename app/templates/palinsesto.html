@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Palinsesto{% endblock %}
+{% block main %}
+<div id="pal" data-day="{{ day }}" data-today="{{ today }}">
+  <div class="row">
+    <button class="icon-btn" id="prev" aria-label="Giorno precedente" title="Giorno precedente"><svg><use href="#i-left"/></svg></button>
+    <nav class="days" id="days" aria-label="Scegli il giorno" style="flex:1"></nav>
+    <button class="icon-btn" id="next" aria-label="Giorno successivo" title="Giorno successivo"><svg><use href="#i-right"/></svg></button>
+    <input type="date" id="pick" aria-label="Vai a una data" style="width:auto;min-height:40px">
+  </div>
+
+  <div class="day-head">
+    <div>
+      <h1 id="day-title">{{ day_label(day) }}</h1>
+      <div class="facts" id="facts">&nbsp;</div>
+    </div>
+    <div class="spacer"></div>
+    <button class="btn" id="btn-copy"><svg><use href="#i-copy"/></svg>Copia su altri giorni</button>
+    <button class="btn danger" id="btn-clear"><svg><use href="#i-trash"/></svg>Svuota</button>
+  </div>
+
+  <div id="notes"></div>
+  <div class="list" id="list" aria-live="polite"><div class="empty">Caricamento…</div></div>
+
+  <div class="add" id="add">
+    <section class="panel">
+      <h2>Aggiungi video</h2>
+      <p class="small muted" style="margin:0 0 12px">Incolla gli indirizzi dei video sulla CDN, uno per riga. Vengono aggiunti in fondo, nell'ordine in cui li incolli, dopo aver controllato formato e bitrate.</p>
+      <label class="field"><span class="sr">Indirizzi dei video</span>
+        <textarea id="urls" rows="4" placeholder="https://tvrxenonondemand.b-cdn.net/…/video.mp4" spellcheck="false" autocapitalize="none"></textarea>
+      </label>
+      <div class="row" style="margin-top:12px">
+        <button class="btn primary" id="btn-add">Aggiungi in fondo</button>
+        <span class="small muted" id="add-status"></span>
+      </div>
+      <ul class="progress-list" id="add-progress"></ul>
+    </section>
+    <section class="panel">
+      <h2>Video già usati</h2>
+      <label class="field"><span class="sr">Cerca</span>
+        <input type="text" id="search" placeholder="Cerca per titolo" autocomplete="off">
+      </label>
+      <ul class="search-results" id="results"></ul>
+    </section>
+  </div>
+</div>
+
+<dialog id="dlg-copy" aria-labelledby="copy-title">
+  <div class="dlg">
+    <h2 id="copy-title">Copia su altri giorni</h2>
+    <p class="small muted" style="margin:4px 0 0">Scegli i giorni. La lista di <b id="copy-src"></b> sostituisce quella dei giorni scelti: quelli segnati con il numero di video hanno già un palinsesto che verrà sostituito.</p>
+    <div class="quick">
+      <button class="btn" type="button" data-quick="week">Stesso giorno, prossime 4 settimane</button>
+      <button class="btn" type="button" data-quick="next7">I prossimi 7 giorni</button>
+      <button class="btn" type="button" data-quick="none">Nessuno</button>
+    </div>
+    <div class="row" style="margin-top:14px">
+      <button class="icon-btn" type="button" id="cal-prev" aria-label="Mese precedente"><svg><use href="#i-left"/></svg></button>
+      <b id="cal-month" style="flex:1;text-align:center"></b>
+      <button class="icon-btn" type="button" id="cal-next" aria-label="Mese successivo"><svg><use href="#i-right"/></svg></button>
+    </div>
+    <div class="cal" id="cal"></div>
+    <div class="dlg-actions">
+      <span class="small muted" id="copy-count" style="margin-right:auto;align-self:center"></span>
+      <button class="btn" type="button" data-close>Annulla</button>
+      <button class="btn primary" type="button" id="copy-go">Copia</button>
+    </div>
+  </div>
+</dialog>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='sortable.min.js') }}"></script>{% endblock %}

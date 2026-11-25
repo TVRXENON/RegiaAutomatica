@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="csrf" content="{{ csrf }}">
+<meta name="theme-color" content="#4b3fd0">
+<title>{% block title %}Regia{% endblock %} · {{ station }}</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='11' fill='%23d42a37'/></svg>">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body data-page="{{ page|default('') }}">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-onair" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="2.5" fill="currentColor"/><path d="M7.8 7.8a6 6 0 0 0 0 8.4M16.2 7.8a6 6 0 0 1 0 8.4M4.9 4.9a10 10 0 0 0 0 14.2M19.1 4.9a10 10 0 0 1 0 14.2"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4M7.5 14h4M7.5 17h7"/></symbol>
+  <symbol id="i-hist" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3.5 12a8.5 8.5 0 1 0 2.5-6"/><path d="M3 4v4.5h4.5M12 7.5V12l3 2"/></symbol>
+  <symbol id="i-set" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14.5a6.5 6.5 0 0 1 3.5 5.5"/></symbol>
+  <symbol id="i-out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4M10 8l-4 4 4 4M6 12h10"/></symbol>
+  <symbol id="i-grip" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 13h9l1-13M10 11v5M14 11v5"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v4.5h-4.5"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5.5A1.5 1.5 0 0 0 14.5 4h-9A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16H8"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-eyeoff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3l18 18M10.6 5.1A10.8 10.8 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.1M6.6 6.6C3.8 8.4 2 12 2 12s3.6 7 10 7a9.8 9.8 0 0 0 5.4-1.6M9.9 9.9a3 3 0 0 0 4.2 4.2"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l10.5-6.5z"/></symbol>
+  <symbol id="i-stop" viewBox="0 0 24 24" fill="currentColor"><rect x="6.5" y="6.5" width="11" height="11" rx="1.5"/></symbol>
+  <symbol id="i-loop" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12a8 8 0 0 1 13.7-5.7L20 8.5M20 4v4.5h-4.5M20 12a8 8 0 0 1-13.7 5.7L4 15.5M4 20v-4.5h4.5"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></symbol>
+</svg>
+{% block body %}
+<header class="top">
+  <div class="top-in">
+    <a class="brand" href="{{ url_for('onair') }}"><b>{{ station }}</b><span>Regia automatica</span></a>
+    <nav class="nav" aria-label="Sezioni">
+      <a href="{{ url_for('onair') }}" {% if page=='onair' %}aria-current="page"{% endif %}><svg><use href="#i-onair"/></svg>In onda</a>
+      <a href="{{ url_for('palinsesto') }}" {% if page=='palinsesto' %}aria-current="page"{% endif %}><svg><use href="#i-cal"/></svg>Palinsesto</a>
+      <a href="{{ url_for('storico') }}" {% if page=='storico' %}aria-current="page"{% endif %}><svg><use href="#i-hist"/></svg>Storico</a>
+      <a href="{{ url_for('impostazioni') }}" {% if page=='impostazioni' %}aria-current="page"{% endif %}><svg><use href="#i-set"/></svg>Impostazioni</a>
+      <a href="{{ url_for('utenti') }}" {% if page=='utenti' %}aria-current="page"{% endif %}><svg><use href="#i-users"/></svg>Utenti</a>
+    </nav>
+    <div class="top-right">
+      <span class="tally" id="tally" data-code=""><i></i><span>…</span></span>
+      <span class="clock num" id="clock" aria-label="Ora attuale">--:--:--</span>
+      <form class="logout" method="post" action="{{ url_for('logout') }}">
+        <input type="hidden" name="csrf" value="{{ csrf }}">
+        <button type="submit" title="Esci ({{ user['name'] }})" aria-label="Esci"><svg><use href="#i-out"/></svg></button>
+      </form>
+    </div>
+  </div>
+</header>
+<main>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in messages %}<div class="flash {{ cat }}" role="status">{{ msg }}</div>{% endfor %}
+  {% endwith %}
+  {% block main %}{% endblock %}
+</main>
+{% endblock %}
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+{% block scripts %}{% endblock %}
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

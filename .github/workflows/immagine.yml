@@ -1,0 +1,52 @@
+# Costruisce l'immagine del container e la pubblica su GitHub Container Registry
+# a ogni modifica del ramo main. Bunny Magic Containers la scarica da lì.
+name: Immagine del container
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Accesso a GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Nome dell'immagine in minuscolo
+        run: echo "IMAGE=${REGISTRY}/${IMAGE_NAME,,}" >> "$GITHUB_ENV"
+
+      - name: Costruzione e pubblicazione
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:latest
+            ${{ env.IMAGE }}:${{ github.sha }}
+
+      # Facoltativo: aggiorna da solo il container su Bunny dopo ogni pubblicazione.
+      # Per attivarlo, nel repository aggiungi la variabile APP_ID e il segreto
+      # BUNNYNET_API_KEY (Settings, Secrets and variables, Actions) e togli il commento.
+      # - name: Aggiornamento su Bunny Magic Containers
+      #   uses: BunnyWay/actions/container-update-image@main
+      #   with:
+      #     app_id: ${{ vars.APP_ID }}
+      #     api_key: ${{ secrets.BUNNYNET_API_KEY }}
+      #     container: app
+      #     image_tag: ${{ github.sha }}
